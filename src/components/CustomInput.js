@@ -4,6 +4,8 @@ export default function CustomInput({
   name,
   placeholder,
   required = false,
+  onChange = () => {},
+  value = "",
   className,
 }) {
   return (
@@ -11,6 +13,8 @@ export default function CustomInput({
       type={type}
       id={id}
       name={name}
+      onChange={onChange}
+      value={value}
       placeholder={placeholder}
       required={required}
       className={
