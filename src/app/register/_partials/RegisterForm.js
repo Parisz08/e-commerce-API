@@ -11,6 +11,7 @@ import { IoMdEye } from "react-icons/io";
 import { FiAlertCircle } from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/core/helpers";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -74,6 +75,11 @@ export default function RegisterForm() {
       setLoading(false);
     }
   };
+
+    const user = useAuth();
+    if (user) {
+      window.location.href = "/";
+    }
 
   return (
     <form className="w-full md:w-1/2 flex flex-col justify-center items-center gap-4" onSubmit={handleSubmit}>

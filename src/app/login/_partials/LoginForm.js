@@ -9,6 +9,7 @@ import { RiLoginCircleFill } from "react-icons/ri";
 import { IoMdEyeOff } from "react-icons/io";
 import { IoMdEye } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/core/useAuth";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -62,6 +63,11 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
+
+  const user = useAuth();
+  if (user) {
+    window.location.href = "/";
+  }
 
   return (
     <form className="w-full md:w-1/2 flex flex-col justify-center items-center gap-4"
