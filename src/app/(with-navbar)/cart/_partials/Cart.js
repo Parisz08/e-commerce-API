@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 
 export default function Cart() {
   const [cartData, setCartData] = useState([]);
+  const [selectedCart, setSelectedCart] = useState([]);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -44,7 +45,7 @@ export default function Cart() {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const res = await fetch(Config.baseApiUrl() + "cart/" + cartId, {
+        const res = await fetch(Config.baseApiUrl() + "cart", {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -52,19 +53,34 @@ export default function Cart() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            productId: productId,
-          })
+            cartId: cartId,
+          }),
         });
         const result = await res.json();
         if (!res.ok) {
           throw new Error(result.message);
         }
         toast.success(result.message);
-  } catch (error) {
+        setCartData(cartData.filter((item) => item.cart_id !== cartId));
+      } catch (error) {
         console.error(error);
         toast.error(error.message);
       }
     }
+  };
+
+  const toggleCart = (cartId, productId, variant, quantity, price) => {
+    if (selectedCart.some((cart) => cart.cartId === cartId)) {
+      setSelectedCart((prevCart) =>
+        prevCart.filter((cart) => cart.cartId !== cartId)
+      );
+      return;
+    }
+
+    setSelectedCart((prevCart) => [
+      ...prevCart,
+      { cartId, productId, variant, quantity, price },
+    ]);
   };
 
   const user = useAuth();
@@ -77,10 +93,22 @@ export default function Cart() {
           <p>Cart is empty</p>
         ) : (
           cartData.map((item) => (
-            <div key={item.id} className="flex items-start gap-2">
+            <div key={item.cart_id} className="flex items-start gap-2">
               <div
+                onClick={() =>
+                  toggleCart(
+                    item.cart_id,
+                    item.id,
+                    item.variant,
+                    item.quantity,
+                    item.price
+                  )
+                }
                 className={
-                  "w-6 h-6 rounded border border-dark flex items-center justify-center"
+                  "w-6 h-6 rounded border border-dark flex items-center justify-center cursor-pointer " +
+                  (selectedCart.some((cart) => cart.cartId === item.cart_id)
+                    ? "bg-blue-500"
+                    : "bg-white")
                 }
               >
                 <FaCheck className={"text-2xl text-white"} />
@@ -100,6 +128,9 @@ export default function Cart() {
 
                 <div>
                   <h3 className="font-semibold text-lg">{item.name}</h3>
+                  {item.variant && (
+                    <p className="text-sm">Variant: {item.variant}</p>
+                  )}
                   <p className="text-sm">{formatCurrency(item.price)}</p>
                   <div>
                     <p className="text-sm">Quantity: {item.quantity}</p>
@@ -109,12 +140,34 @@ export default function Cart() {
                   </div>
                 </div>
               </Link>
-              <button className="w-8 h-8 rounded bg-red-500 hover:bg-red-700 flex items-center justify-center">
+              <button
+                onClick={() => deleteCart(item.cart_id)}
+                className="w-8 h-8 rounded bg-red-500 hover:bg-red-700 flex items-center justify-center"
+              >
                 <BsTrash3 className="text-2xl text-white" />
               </button>
             </div>
           ))
         )}
+      </div>
+      <div className="bg-white p-10 fixed bottom-0 left-0 w-full text-right shadow-lg flex items-center justify-end gap-6">
+        <div>
+          <p className="text-xl font-medium">Total :</p>
+          <p className="font-bold text-4xl">
+            {formatCurrency(
+              selectedCart.reduce(
+                (total, item) => total + item.price * item.quantity,
+                0
+              )
+            )}
+          </p>
+        </div>
+        <button
+          type="button"
+          className="bg-dark text-white py-3 px-6 text-xl font-medium mt-2"
+        >
+          Checkout
+        </button>
       </div>
     </Fragment>
   );
