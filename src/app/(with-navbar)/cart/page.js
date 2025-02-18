@@ -1,4 +1,4 @@
-import Cart from "./_partials/cart";
+import Cart from "./_partials/Cart";
 
 export const metadata = {
   title: "Cart",

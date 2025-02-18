@@ -19,6 +19,7 @@ export default function OrderAction({ data }) {
         if(quantity == 1) return;
         setQuantity(quantity - 1);
     }
+
     const handleAddToCart = async () => {
         
         try {

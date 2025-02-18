@@ -85,6 +85,20 @@ export default function Cart() {
 
   const user = useAuth();
   if (!user) return;
+
+    const handleCheckout = () => {
+      toast.success("gasin Checkout!", {
+        position: "top-center",
+        duration: 3000,
+        style: {
+          borderRadius: "8px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+    };
+
+
   return (
     <Fragment>
       <h1 className="text-4xl font-bold mb-6">Cart</h1>
@@ -163,11 +177,11 @@ export default function Cart() {
           </p>
         </div>
         <button
-          type="button"
-          className="bg-dark text-white py-3 px-6 text-xl font-medium mt-2"
-        >
-          Checkout
-        </button>
+      onClick={handleCheckout}
+      className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition"
+    >
+      Checkout
+    </button>
       </div>
     </Fragment>
   );
