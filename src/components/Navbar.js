@@ -2,19 +2,47 @@
 import Config from "@/core/config";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { useAuth } from "@/core/useAuth";
+import { toast } from "react-hot-toast";
+import { MdLocationPin } from "react-icons/md";
+
 
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
+    const [address, setAddress] = useState("Pilih alamat...");
+  const [showInput, setShowInput] = useState(false);
     const router = useRouter(); // Initialize useRouter
     
     const toggleMenu = () => {
         setOpen(!open);
     }
+
+    useEffect(() => {
+      const savedAddress = localStorage.getItem("userAddress");
+      if (savedAddress) {
+        setAddress(savedAddress);
+      }
+    }, []);
+  
+    const handleAddressChange = (event) => {
+      setAddress(event.target.value);
+    };
+  
+    const saveAddress = () => {
+      if (address.trim() === "") {
+        toast.error("Alamat tidak boleh kosong!");
+        return;
+      }
+  
+      localStorage.setItem("userAddress", address);
+      toast.success("Alamat berhasil diperbarui!");
+      setShowInput(false);
+    };
+
     const logout = () => {
       localStorage.removeItem("token");
       router.push("/login");
@@ -35,6 +63,32 @@ export default function Navbar() {
           <span className="font-poppins text-2xl font-bold">
             {Config.appName()}
           </span>
+          <div className="relative">
+      {showInput ? (
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={address}
+            onChange={handleAddressChange}
+            className="px-2 py-1 border rounded-md"
+          />
+          <button
+            onClick={saveAddress}
+            className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
+          >
+            Simpan
+          </button>
+        </div>
+      ) : (
+        <p
+          className="text-white cursor-pointer hover:underline"
+          onClick={() => setShowInput(true)}
+        >
+          {address}
+          <MdLocationPin className="text-red-500 cursor-pointer mb-5 text-3xl flex items-center gap-4" />
+        </p>
+      )}
+    </div>
         </Link>
         <nav className="text-3xl flex items-center gap-3">
           <Link href="/search">
@@ -91,5 +145,6 @@ export default function Navbar() {
 
         </div>
       </header>
+      
     )
 }

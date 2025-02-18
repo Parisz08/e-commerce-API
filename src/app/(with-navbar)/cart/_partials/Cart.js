@@ -86,18 +86,6 @@ export default function Cart() {
   const user = useAuth();
   if (!user) return;
 
-    const handleCheckout = () => {
-      toast.success("gasin Checkout!", {
-        position: "top-center",
-        duration: 3000,
-        style: {
-          borderRadius: "8px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
-    };
-
 
   return (
     <Fragment>
@@ -177,7 +165,6 @@ export default function Cart() {
           </p>
         </div>
         <button
-      onClick={handleCheckout}
       className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition"
     >
       Checkout
